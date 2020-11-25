@@ -1,10 +1,10 @@
 /*********
- * this is a bad solution for santizing messes up bad on 
- * the modular edit. 
+ * this is a bad solution for santizing.
+ * it messes up bad on the modular edit. 
  */
 function sanitize(string) {
-    const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', "/": '&#x2F;'};
-    const reg = /[&<>"'/]/ig;
+    const map = {'<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', "/": '&#x2F;'};
+    const reg = /[<>"'/]/ig;
     return string.replace(reg, (match)=>(map[match]));
   }
 

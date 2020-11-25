@@ -31,6 +31,7 @@ router.put('/edit/:id?', (req, res) => {
     let id = req.params.id;
     if(id !== undefined) {
         chirpsStore.UpdateChirp(id, req.body);
+        res.sendStatus(200);
     }
 })
 
