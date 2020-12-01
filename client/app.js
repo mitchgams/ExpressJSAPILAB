@@ -55,35 +55,40 @@ $('#saveChirp').click(() => {
 let loadChirps = async() => {
     $('#chirp-container').empty();
     let response = await fetch("./api/chirps/");
-    let chirps = await response.json();
-    let chirpCount = chirps['nextid'];
+    const data = await response.json();
+    let chirpCount = data['nextid'];
     nextId = chirpCount;
-    for(let i = 0; i < chirpCount; i++) {
-        if(chirps[i] !== undefined) {
-            let div = $(commentBlock(chirps[i].user, chirps[i].text, i));
+    const chirps = Object.keys(data).map(key => {
+        return {
+            id: key,
+            ...data[key]
+        }
+    });
+    chirps.pop();
+    //for(chirp of chirps) {  // whoopsie scopsie 
+    chirps.forEach(chirp => {
+        let div = $(commentBlock(chirp));
             $('#chirp-container').prepend(div);
 
-            /***************
-             * Delete Button
-             */
-            $(`#${i}`).click(() => {
+            $(`#${chirp.id}`).click(() => {
                 div.remove();
-                deleteChirp(i);
+                deleteChirp(chirp.id);
             });
-
-            /*************
-             * Edit Module
-             */
-            $(`#edit${i}`).click(async() => {
-                response = await fetch(`./api/chirps/${i}`);
-                let chirp = await response.json();
+            $(`#edit${chirp.id}`).click(() => {
                 $('#editUser').val(chirp.user);
                 $('#chirpEditContent').val(chirp.text);
-                $('#chirpId').val(i);
+                $('#chirpId').val(chirp.id);
                 console.log(chirp.text);
             })
+        });
+    console.log(chirps);
+
+    /*
+    for(let i = 0; i < chirpCount; i++) {
+        if(chirps[i] !== undefined) {
+            
         }
-    }
+    }*/
 }
 loadChirps();
 
@@ -95,24 +100,24 @@ function deleteChirp(id) {
     });
 }
 
-function commentBlock(name, text, id=0) {
+function commentBlock(chirp) {
     return (`<div class='card mb-3'>
                 <div class='card-header p-0 pl-1'>
                     <div class='row'>
                         <div class='col'>
-                            <h5 class='mt-3 better-font' id='chirper-user${id}'>${name}</h5>
+                            <h5 class='mt-3 better-font' id='chirper-user${chirp.id}'>${chirp.user}</h5>
                         </div>
                         <div class='col float-right'>
-                            <button class='btn m-0 btn-secondary btn-small float-right' id='${id}'>X</button>
+                            <button class='btn m-0 btn-secondary btn-small float-right' id='${chirp.id}'>X</button>
                         </div>
                     </div>
                 </div>
                 <div class='card-body p-2'>
-                    <p class='card-text' id='chirper-text${id}'>
-                        ${text}
+                    <p class='card-text' id='chirper-text${chirp.id}'>
+                        ${chirp.text}
                     </p>
                     <p class='p-0 m-0 float-right'>
-                        <a data-toggle="modal" data-target="#chirp-edit" id="edit${id}" href="#">[edit]</a>
+                        <a data-toggle="modal" data-target="#chirp-edit" id="edit${chirp.id}" href="#">[edit]</a>
                     </p>
                 </div>
             </div>`);
